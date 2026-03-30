@@ -42,13 +42,23 @@ class BaseAgent(ABC):
         """
         Find and return the path to the agent binary.
 
+        Checks the EXPLAIN_{AGENT}_PATH environment variable first (e.g.
+        EXPLAIN_CLAUDE_PATH, EXPLAIN_AMP_PATH), before falling back to a PATH lookup.
+
         Returns:
             Path to the agent binary, or None if not found
+
+        Raises:
+            FileNotFoundError: If the EXPLAIN_{AGENT}_PATH environment variable is set but the path
+                could not be found
         """
-        if loc := shutil.which(cls.program_name):
-            return Path(loc)
-        else:
-            return None
+        env_var = f"EXPLAIN_{cls.name.upper()}_PATH"
+        program = os.environ.get(env_var) or cls.program_name
+        if loc := shutil.which(program):
+            return Path(loc).absolute()
+        if os.environ.get(env_var):
+            raise FileNotFoundError(f"{env_var} is set to {program!r} but it could not be found.")
+        return None
 
     @abstractmethod
     async def ask(self, question: str, port: int, tools: list[str]) -> str:
