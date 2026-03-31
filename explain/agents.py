@@ -50,7 +50,7 @@ class BaseAgent(ABC):
             Path to the agent binary, or None if not found
 
         Raises:
-            FileNotFoundError: If the EXPLAIN_{AGENT}_PATH environment variable is set but the path
+            Exception: If the EXPLAIN_{AGENT}_PATH environment variable is set but the path
                 could not be found
         """
         env_var = f"EXPLAIN_{cls.name.upper()}_PATH"
@@ -58,7 +58,7 @@ class BaseAgent(ABC):
         if loc := shutil.which(program):
             return Path(loc).absolute()
         if os.environ.get(env_var):
-            raise FileNotFoundError(f"{env_var} is set to {program!r} but it could not be found.")
+            raise Exception(f"{env_var} is set to {program!r} but it could not be found.")
         return None
 
     @abstractmethod
