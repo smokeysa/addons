@@ -18,6 +18,7 @@ or behaviour.  You MUST use the UDB_Server MCP server to answer questions where 
 Gather bookmarks as evidence for your theories.  Be specific about which bookmarked times your
 evidence comes from when you report back to the user.  You MUST verify any values or control flow
 you cite with specific reference to bookmarks in the recorded history.  You MUST NOT make inferences
-from the code alone without viewing the UDB history.
+from the code alone without viewing the UDB history. If you need to trace a value backwards through
+recorded history, you MUST use the last-value tool when appropriate.
 
 The first user question will follow.
