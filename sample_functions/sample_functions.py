@@ -8,11 +8,12 @@ Usage:
     means sample every basic block from 1 to 1000.
 
 Contributors: Isa Smith, Toby Lloyd Davies
-Copyright (C) 2019 Undo Ltd
+Copyright (C) 2019-2026 Undo Ltd
 """
 
 import sys
 from collections import defaultdict
+from typing import TextIO
 
 import gdb
 from undo.debugger_extensions import debugger_utils, udb
@@ -23,11 +24,11 @@ class SampleFunctions(gdb.Command):
     Advance through the debuggee, sampling the function we are currently in.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("usample", gdb.COMMAND_USER)
 
     @staticmethod
-    def invoke(arg, from_tty):
+    def invoke(arg: str, from_tty: bool) -> None:
         """
         arg is:
         <start_bbcount> <end_bbcount> <bbcount_interval> [<filename>]
@@ -35,9 +36,9 @@ class SampleFunctions(gdb.Command):
         means sample every basic block from 1 to 1000.
         """
         with udb.time.auto_reverting():
-            functions = defaultdict(int)
+            functions: defaultdict[str, int] = defaultdict(int)
 
-            args = gdb.string_to_argv(arg)
+            args: list[str] = gdb.string_to_argv(arg)
 
             if len(args) not in (3, 4):
                 raise gdb.GdbError(
@@ -53,6 +54,7 @@ class SampleFunctions(gdb.Command):
                     "start_bbcount, end_bbcount, and bbcount_interval must be integers"
                 ) from e
 
+            output: TextIO
             if len(args) > 3:
                 output = open(args[3], "wt")  # pylint: disable=consider-using-with
             else:
@@ -66,9 +68,9 @@ class SampleFunctions(gdb.Command):
             with debugger_utils.temporary_parameter("pagination", False):
                 for i, current_bbcount in enumerate(sample_range):
                     udb.time.goto(current_bbcount)
-                    frame = gdb.newest_frame()
+                    frame: gdb.Frame | None = gdb.newest_frame()
                     # Create list of functions in the backtrace
-                    trace_functions = []
+                    trace_functions: list[str] = []
                     while frame is not None:
                         if frame.name() is not None:
                             trace_functions.append(frame.name())
