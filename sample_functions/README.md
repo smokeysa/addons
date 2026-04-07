@@ -1,6 +1,6 @@
 # Sample functions
 
-Sampler which counts the number of times we find ourselves in a particular function.
+Sampler which takes a sample of the backtrace at a given frequency, and counts how often we find ourselves in each place.
 Outputs a list of functions with their counts.
 ```
 Usage:

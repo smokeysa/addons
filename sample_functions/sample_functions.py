@@ -1,14 +1,13 @@
 """
-Sampler which uses debug info (via gdb's "where" command)
-together with UDB's ugo command to count the number of times we find
-ourselves in a particular function.
+Sampler which takes a sample of the backtrace at a given frequency, and counts
+how often we find ourselves in each place.
 
 Usage:
    usample <start_bbcount> <end_bbcount> <bbcount_interval>
    E.g. 1 1000 1
     means sample every basic block from 1 to 1000.
 
-Contributers: Isa Smith, Toby Lloyd Davies
+Contributors: Isa Smith, Toby Lloyd Davies
 Copyright (C) 2019 Undo Ltd
 """
 
@@ -36,16 +35,26 @@ class SampleFunctions(gdb.Command):
         means sample every basic block from 1 to 1000.
         """
         with udb.time.auto_reverting():
-            functions = defaultdict(lambda: 0)
+            functions = defaultdict(int)
 
             args = gdb.string_to_argv(arg)
 
-            start_bbcount = int(args[0])
-            end_bbcount = int(args[1])
-            interval = int(args[2])
+            if len(args) not in (3, 4):
+                raise gdb.GdbError(
+                    "Usage: usample <start_bbcount> <end_bbcount> <bbcount_interval> [<filename>]"
+                )
+
+            try:
+                start_bbcount = int(args[0])
+                end_bbcount = int(args[1])
+                interval = int(args[2])
+            except ValueError as e:
+                raise gdb.GdbError(
+                    "start_bbcount, end_bbcount, and bbcount_interval must be integers"
+                ) from e
 
             if len(args) > 3:
-                output = open(args[3], "wt")  # pylint:disable=consider-using-with
+                output = open(args[3], "wt")  # pylint: disable=consider-using-with
             else:
                 output = sys.stdout
 
@@ -68,7 +77,7 @@ class SampleFunctions(gdb.Command):
 
         # Now print what we've found...
         for function in functions:
-            print("{} {}".format(function, str(functions[function])), file=output)
+            output.write(f"{function} {functions[function]}\n")
 
 
 SampleFunctions()

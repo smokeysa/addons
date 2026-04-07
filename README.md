@@ -46,7 +46,7 @@ Executes a reverse-step-instruction, prints the instruction and, for each
 register used in it, prints which map is involved.
 
 [**Sample functions**](sample_functions/README.md)
-Samples the number of times the program is in each function.
+Samples the backtrace at a given frequency, and counts how often we find ourselves in each place.
 
 [**What map**](what_map/README.md)
 Looks up a variable or address within the maps of the debuggee.
