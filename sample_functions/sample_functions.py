@@ -63,10 +63,7 @@ class SampleFunctions(gdb.Command):
             print(f"Taking {num_samples} samples.")
             save_interval = max(1, num_samples // 10)
 
-            with (
-                debugger_utils.temporary_parameter("pagination", False),
-                debugger_utils.temporary_parameter("print address", False),
-            ):
+            with debugger_utils.temporary_parameter("pagination", False):
                 for i, current_bbcount in enumerate(sample_range):
                     udb.time.goto(current_bbcount)
                     frame = gdb.newest_frame()
