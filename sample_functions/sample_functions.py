@@ -58,8 +58,11 @@ class SampleFunctions(gdb.Command):
             else:
                 output = sys.stdout
 
+            sample_range = range(start_bbcount, end_bbcount + 1, interval)
+            print(f"Taking {len(sample_range)} samples.")
+
             with debugger_utils.temporary_parameter("print address", False):
-                for current_bbcount in range(start_bbcount, end_bbcount + 1, interval):
+                for current_bbcount in sample_range:
                     udb.time.goto(current_bbcount)
                     frame = gdb.newest_frame()
                     # Create list of functions in the backtrace
