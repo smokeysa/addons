@@ -59,10 +59,12 @@ class SampleFunctions(gdb.Command):
                 output = sys.stdout
 
             sample_range = range(start_bbcount, end_bbcount + 1, interval)
-            print(f"Taking {len(sample_range)} samples.")
+            num_samples = len(sample_range)
+            print(f"Taking {num_samples} samples.")
+            save_interval = max(1, num_samples // 10)
 
             with debugger_utils.temporary_parameter("print address", False):
-                for current_bbcount in sample_range:
+                for i, current_bbcount in enumerate(sample_range):
                     udb.time.goto(current_bbcount)
                     frame = gdb.newest_frame()
                     # Create list of functions in the backtrace
@@ -77,6 +79,13 @@ class SampleFunctions(gdb.Command):
                     # Concatenate functions in backtrace to create key
                     key = ";".join(reversed(trace_functions))
                     functions[key] += 1
+
+                    if output is not sys.stdout and (i + 1) % save_interval == 0:
+                        output.seek(0)
+                        output.truncate()
+                        for function, count in functions.items():
+                            output.write(f"{function} {count}\n")
+                        output.flush()
 
         # Now print what we've found...
         for function in functions:
