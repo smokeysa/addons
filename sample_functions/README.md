@@ -52,7 +52,7 @@ You can then view the generated SVG file in your browser. Clicking on a block
 will allow you to zoom in to see more detail. You can also search for function
 names with regular expressions.
 
-Run `flamegraph.ph --help` to see more options for controlling the output.
+Run `flamegraph.pl --help` to see more options for controlling the output.
 
 These flame graphs show the proportion of basic blocks that run in a particular
 call stack. This is related to execution time, but is *not* identical. Not all
